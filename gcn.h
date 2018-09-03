@@ -1,25 +1,47 @@
 #ifndef GCN_H
 #define GCN_H
 
+#include <stdint.h>
+
+typedef enum Button {
+    X = 0,
+    A = 1,
+    B = 2,
+    Y = 3,
+    L = 4,
+    R = 5,
+    //= 6,
+    Z = 7,
+
+    //      = 8,
+    START   = 9,
+    //      = 10,
+    //      = 11
+    D_UP    = 12,
+    D_RIGHT = 13,
+    D_DOWN  = 14,
+    D_LEFT  = 15,
+} eButton;
+
 // [X A B Y L R ZL? ZR] [_ Start _ _ DU DR DD DL]
 typedef struct Buttons {
-    char X : 1;
-    char A : 1;
-    char B : 1;
-    char Y : 1;
-    char L : 1;
-    char R : 1;
-    char : 1;
-    char Z : 1;
+    uint8_t X : 1;
+    uint8_t A : 1;
+    uint8_t B : 1;
+    uint8_t Y : 1;
+    uint8_t L : 1;
+    uint8_t R : 1;
+    uint8_t   : 1;
+    uint8_t Z : 1;
 
-    char : 1;
-    char Start : 1;
-    char : 1;
-    char : 1;
-    char DUp : 1;
-    char DRight : 1;
-    char DDown : 1;
-    char DLeft : 1;
+    uint8_t       : 1;
+    uint8_t Start : 1;
+    uint8_t       : 1;
+    uint8_t       : 1;
+    uint8_t DUp   : 1;
+    uint8_t DRight: 1;
+    uint8_t DDown : 1;
+    uint8_t DLeft : 1;
 } Buttons;
 
 // [LR Axis] [UD Axis] - Main Stick
@@ -48,6 +70,8 @@ typedef struct GameCube {
     Triggers triggers; // 2
     char : 8;
 } GameCube;
+
+char getButton(GameCube* gc, eButton button);
 
 void printGameCube(GameCube *gc);
 
