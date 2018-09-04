@@ -10,7 +10,7 @@ struct USBDevice {
 };
 
 USBDevice* openDevice(char* name) {
-    char* base = "/dev/";
+    char* base = "/dev/hidraw";
     size_t totalLen = strlen(base) + strlen(name);
 
     char* fullName = malloc(totalLen + 1);

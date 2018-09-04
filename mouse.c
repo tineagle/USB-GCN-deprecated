@@ -25,8 +25,12 @@ Mouse* createMouse() {
     usetup.id.bustype = BUS_USB;
     strcpy(usetup.name, "GCN 1");
 
+    setupMouseFeatures(mouse);
+
     ioctl(mouse->fd, UI_DEV_SETUP, &usetup);
     ioctl(mouse->fd, UI_DEV_CREATE);
+
+    return mouse;
 }
 
 void destroyMouse(Mouse* mouse) {
@@ -42,6 +46,11 @@ void setupMouseFeatures(Mouse* mouse) {
     ioctl(mouse->fd, UI_SET_KEYBIT, BTN_MIDDLE);
     ioctl(mouse->fd, UI_SET_KEYBIT, BTN_EXTRA);
     ioctl(mouse->fd, UI_SET_KEYBIT, BTN_SIDE);
+    
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_UP);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_RIGHT);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_DOWN);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_LEFT);
 
 
     ioctl(mouse->fd, UI_SET_EVBIT, EV_REL);
@@ -84,6 +93,22 @@ MOUSE_STATE_FUN(forwardClick) {
 
 MOUSE_STATE_FUN(backClick) {
     emit(mouse->fd, EV_KEY, BTN_SIDE, state);
+}
+
+MOUSE_STATE_FUN(upArrow) {
+    emit(mouse->fd, EV_KEY, KEY_UP, state);
+}
+
+MOUSE_STATE_FUN(rightArrow) {
+    emit(mouse->fd, EV_KEY, KEY_RIGHT, state);
+}
+
+MOUSE_STATE_FUN(downArrow) {
+    emit(mouse->fd, EV_KEY, KEY_DOWN, state);
+}
+
+MOUSE_STATE_FUN(leftArrow) {
+    emit(mouse->fd, EV_KEY, KEY_LEFT, state);
 }
 
 MOUSE_COORD_FUN(moveMouse) {
