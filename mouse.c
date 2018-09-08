@@ -52,6 +52,13 @@ void setupMouseFeatures(Mouse* mouse) {
     ioctl(mouse->fd, UI_SET_KEYBIT, KEY_DOWN);
     ioctl(mouse->fd, UI_SET_KEYBIT, KEY_LEFT);
 
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_TAB);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_ENTER);
+    
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_LEFTCTRL);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_LEFTSHIFT);
+    ioctl(mouse->fd, UI_SET_KEYBIT, KEY_LEFTALT);
+
 
     ioctl(mouse->fd, UI_SET_EVBIT, EV_REL);
     ioctl(mouse->fd, UI_SET_RELBIT, REL_X);
@@ -109,6 +116,26 @@ MOUSE_STATE_FUN(downArrow) {
 
 MOUSE_STATE_FUN(leftArrow) {
     emit(mouse->fd, EV_KEY, KEY_LEFT, state);
+}
+
+MOUSE_STATE_FUN(ctrlKey) {
+    emit(mouse->fd, EV_KEY, KEY_LEFTCTRL, state);
+}
+
+MOUSE_STATE_FUN(shiftKey) {
+    emit(mouse->fd, EV_KEY, KEY_LEFTSHIFT, state);
+}
+
+MOUSE_STATE_FUN(altKey) {
+    emit(mouse->fd, EV_KEY, KEY_LEFTALT, state);
+}
+
+MOUSE_STATE_FUN(tabKey) {
+    emit(mouse->fd, EV_KEY, KEY_TAB, state);
+}
+
+MOUSE_STATE_FUN(enterKey) {
+    emit(mouse->fd, EV_KEY, KEY_ENTER, state);
 }
 
 MOUSE_COORD_FUN(moveMouse) {

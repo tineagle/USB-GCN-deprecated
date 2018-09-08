@@ -30,7 +30,7 @@ typedef struct ControllerState {
 } ControllerState;
 
 
-void pollEvents();
+ControllerState* pollEvents(int id);
 ControllerState* getState(size_t controllerID);
 
 size_t addController(size_t controllerID);

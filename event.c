@@ -2,11 +2,12 @@
 
 #include "usb.h"
 #include <memory.h>
+#include <stdio.h>
 
 USBDevice* devices[4];
 ControllerState controllers[4];
 
-#define UPDATE_MATH(OLD, CURRENT) (OLD << 1) & CURRENT
+#define UPDATE_MATH(OLD, CURRENT) ((uint8_t) OLD << 1) | (uint8_t) CURRENT
 #define GET_BUTTON(GC, BUTTON) GC.buttons.BUTTON
 #define PGET_BUTTON(GC, BUTTON) GC->buttons.BUTTON
 #define UPDATE_TRANSITION(OLD, CURRENT, BUTTON) \
@@ -27,16 +28,16 @@ void updateTransitions(ControllerState* old, GameCube* currentState) {
     UPDATE_TRANSITION(old, currentState, DLeft);
 }
 
-void pollEvents() {
-    for(int i = 0; i < 4; ++i) {
-        if(devices[i] != NULL) {
-            GameCube currentState;
-            readLatestData(devices[i], &currentState, sizeof(GameCube));
+ControllerState* pollEvents(int id) {
+    GameCube currentState;
+    USBDevice* device = devices[id];
 
-            updateTransitions(&controllers[i], &currentState);
-            controllers[i].rawState = currentState;
-        }
-    }
+    freopen(device->path, "r", device->file);
+    fread(&currentState, sizeof(GameCube), 1, device->file);
+
+    updateTransitions(controllers + id, &currentState);
+    controllers[id].rawState = currentState;
+    return controllers + id;
 }
 
 size_t getIndex(size_t controllerID) {

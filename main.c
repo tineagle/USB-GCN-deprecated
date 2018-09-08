@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "event.h"
 #include "mouse.h"
 
@@ -5,6 +7,8 @@
 #include <string.h>
 
 #include "linux/uinput.h"
+
+#include <unistd.h>
 
 void handleState(ControllerState* state, Mouse* mouse) {
     if(state->A == RISING) {
@@ -28,7 +32,7 @@ void handleState(ControllerState* state, Mouse* mouse) {
     if(state->R == RISING) {
         forwardClick(mouse, 1);
     } else if(state->R == FALLING) {
-        backClick(mouse, 0);
+        forwardClick(mouse, 0);
     }
 
     if(state->DUp == RISING) {
@@ -55,41 +59,86 @@ void handleState(ControllerState* state, Mouse* mouse) {
         leftArrow(mouse, 0);
     }
 
+    if(state->Start == RISING) {
+        enterKey(mouse, 1);
+    } else if(state->Start == FALLING) {
+        enterKey(mouse, 0);
+    }
+
+    if(state->Y == RISING) {
+        ctrlKey(mouse, 1);
+        shiftKey(mouse, 1);
+        tabKey(mouse, 1);
+    } else if(state->Y == FALLING) {
+        tabKey(mouse, 0);
+        shiftKey(mouse, 0);
+        ctrlKey(mouse, 0);
+    }
+
+    if(state->X == RISING) {
+        ctrlKey(mouse, 1);
+        tabKey(mouse, 1);
+    } else if(state->X == FALLING) {
+        tabKey(mouse, 0);
+        ctrlKey(mouse, 0);
+    }
+
+    if(state->Z == RISING) {
+        altKey(mouse, 1);
+    } else if(state->Z == FALLING) {
+        altKey(mouse, 0);
+    }
+
     int dxMouse;
-    if(state->rawState.mainStick.LR > 20) dxMouse =  5;
-    if(state->rawState.mainStick.LR < 20) dxMouse = -5;
+    if(state->rawState.mainStick.LR > 160) dxMouse =  15;
+    else if(state->rawState.mainStick.LR <= 90) dxMouse = -15;
+    else dxMouse = 0;
     int dyMouse;
-    if(state->rawState.mainStick.UD > 20) dyMouse =  5;
-    if(state->rawState.mainStick.UD < 20) dyMouse = -5;
+    if(state->rawState.mainStick.UD > 160) dyMouse =  15;
+    else if(state->rawState.mainStick.UD <= 90) dyMouse = -15;
+    else dyMouse = 0;
+
     moveMouse(mouse, dxMouse, dyMouse);
 
     int dxScroll;
-    if(state->rawState.cStick.LR > 20) dxScroll =  5;
-    if(state->rawState.cStick.LR < 20) dxScroll = -5;
+    if(state->rawState.cStick.LR > 160) dxScroll =  2;
+    else if(state->rawState.cStick.LR <= 90) dxScroll = -2;
+    else dxScroll = 0;
     int dyScroll;
-    if(state->rawState.cStick.UD > 20) dyScroll =  5;
-    if(state->rawState.cStick.UD < 20) dyScroll = -5;
+    if(state->rawState.cStick.UD > 160) dyScroll =  -2;
+    else if(state->rawState.cStick.UD <= 90) dyScroll = 2;
+    else dyScroll = 0;
     scrollMouse(mouse, dxScroll, dyScroll);
 
     sendEvents(mouse);
 }
 
 #include <unistd.h>
+#include <time.h>
 
 int main(void) {
-    size_t id1 = addController(0);
+    size_t id0 = addController(0);
     Mouse* mouse = createMouse();
-
-    if(id1 == SIZE_MAX) {
+    if(id0 == SIZE_MAX) {
         return 1;
     }
 
+    struct timespec start;
+    struct timespec end;
+    struct timespec request;
+    struct timespec remaining;
+    int i = 0;
     while(1) {
-        pollEvents();
-        ControllerState* state1 = getState(id1);
-        // doStuff
+        clock_gettime(CLOCK_REALTIME, &start);
+        ControllerState* state = pollEvents(id0);
+        handleState(state, mouse);
+        clock_gettime(CLOCK_REALTIME, &end);
+        long elapse = end.tv_nsec - start.tv_nsec;
+        request.tv_nsec = 16500000 - elapse;
+        request.tv_sec = 0;
+        nanosleep(&request, &remaining);
     }
 
-    removeController(id1);
+    removeController(id0);
     destroyMouse(mouse);
 }

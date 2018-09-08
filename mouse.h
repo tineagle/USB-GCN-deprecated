@@ -23,6 +23,13 @@ MOUSE_STATE_FUN(rightArrow);
 MOUSE_STATE_FUN(downArrow);
 MOUSE_STATE_FUN(leftArrow);
 
+MOUSE_STATE_FUN(ctrlKey);
+MOUSE_STATE_FUN(shiftKey);
+MOUSE_STATE_FUN(altKey);
+
+MOUSE_STATE_FUN(tabKey);
+MOUSE_STATE_FUN(enterKey);
+
 MOUSE_COORD_FUN(moveMouse);
 MOUSE_COORD_FUN(scrollMouse);
 

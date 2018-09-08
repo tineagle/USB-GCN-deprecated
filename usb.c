@@ -4,11 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 
-struct USBDevice {
-    char* path;
-    FILE* file;
-};
-
 USBDevice* openDevice(char* name) {
     char* base = "/dev/hidraw";
     size_t totalLen = strlen(base) + strlen(name);
@@ -20,6 +15,7 @@ USBDevice* openDevice(char* name) {
     strcat(fullName, name);
 
     FILE* file = fopen(fullName, "r");
+
     if(file == NULL) {
         free(fullName);
         return NULL;
@@ -37,14 +33,21 @@ void closeDevice(USBDevice* device) {
         return;
     }
 
-    fclose(device->file);
-    free(device->path);
+    //freopen(device->path, "r", device->file);
     free(device);
 }
 
-size_t readLatestData(USBDevice* device, void* buffer, size_t size) {
-    fseek(device->file, -size, SEEK_END);
-    return fread(buffer, size, 1, device->file);
+#include <time.h>
+
+void readLatestData(USBDevice* device, void* buffer, size_t size) {
+    struct timespec start;
+    struct timespec end;
+
+    clock_gettime(0, &start);
+    fread(buffer, 9, 1, device->file);
+    clock_gettime(0, &end);
+
+    printf("%ld\n", (end.tv_nsec - start.tv_nsec) / 1000000);
 }
 
 void printBits(char c) {
