@@ -117,7 +117,7 @@ void handleState(ControllerState* state, Mouse* mouse) {
 #include <time.h>
 
 int main(void) {
-    size_t id0 = addController(0);
+    size_t id0 = addController(1);
     Mouse* mouse = createMouse();
     if(id0 == SIZE_MAX) {
         return 1;
