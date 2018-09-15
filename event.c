@@ -50,7 +50,7 @@ ControllerState* getState(size_t controllerID) {
     return devices[index] == NULL ? NULL : controllers + index;
 }
 
-size_t addController(size_t controllerID) {
+size_t addController(size_t controllerID, char* name) {
     size_t index = getIndex(controllerID);
 
     if(devices[index] != NULL) {
@@ -58,7 +58,7 @@ size_t addController(size_t controllerID) {
     }
 
     char* devIDs[] = {"1", "2", "3", "4"};
-    devices[index] = openDevice(devIDs[index]);
+    devices[index] = openDevice(name);
     return controllerID;
 }
 

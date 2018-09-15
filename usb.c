@@ -5,25 +5,16 @@
 #include <string.h>
 
 USBDevice* openDevice(char* name) {
-    char* base = "/dev/hidraw";
-    size_t totalLen = strlen(base) + strlen(name);
-
-    char* fullName = malloc(totalLen + 1);
-    fullName[0] = '\0';
-
-    strcat(fullName, base);
-    strcat(fullName, name);
-
-    FILE* file = fopen(fullName, "r");
+    FILE* file = fopen(name, "r");
 
     if(file == NULL) {
-        free(fullName);
+        free(name);
         return NULL;
     }
 
     USBDevice* device = malloc(sizeof(USBDevice));
     device->file = file;
-    device->path = fullName;
+    device->path = name;
 
     return device;
 }

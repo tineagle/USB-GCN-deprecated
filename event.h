@@ -33,7 +33,7 @@ typedef struct ControllerState {
 ControllerState* pollEvents(int id);
 ControllerState* getState(size_t controllerID);
 
-size_t addController(size_t controllerID);
+size_t addController(size_t controllerID, char* name);
 void removeController(size_t controllerID);
 
 #endif
